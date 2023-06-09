@@ -8,20 +8,24 @@ import { UploadFileDto } from "../dtos/upload_file.dto";
 
 const multerStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, `Server/public/files`);
+    cb(null, "/media/dagimkennedy/Local Disk1/Excel-Import/Server/public");
   },
   filename: (req, file, cb) => {
     const ext = file.mimetype.split("/")[1];
-    req.body.efile = `excel-file-${Date.now()}.${ext}`;
+
+    req.body.efile = `excel-file-${Date.now()}.xlsx`;
     cb(null, req.body.efile);
   },
 });
 const multerFilter = (req, file, cb) => {
-  if (file.mimetype.includes("xslx")) {
+  if (
+    file.mimetype === "application/vnd.ms-excel" ||
+    file.mimetype ===
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  ) {
     cb(null, true);
   } else {
     const error = new HttpError("Only excel files are allowed!.", 400);
-
     cb(error, false);
   }
 };
@@ -31,7 +35,7 @@ const upload = multer({
 });
 export const uploadFile = upload.single("efile");
 
-export async function uploadExcelFile(
+export async function UploadExcelFile(
   req: Request,
   res: Response,
   next: NextFunction
@@ -48,7 +52,20 @@ export async function uploadExcelFile(
         message: errors[0].constraints,
       });
     } else {
-      fileUploaderService.uploadExcelFile(uploadFileDto, res);
+      return fileUploaderService.UploadExcelFile(uploadFileDto, res);
     }
   });
+}
+
+export async function GetUploadedExcelFile(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  let id = req.params.id;
+  return fileUploaderService.GetUploadedExcelFile(id, res);
+}
+
+export async function getfn(req: Request, res: Response, next: NextFunction) {
+  return fileUploaderService.getf(res);
 }

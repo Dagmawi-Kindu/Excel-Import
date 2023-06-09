@@ -5,6 +5,7 @@ import * as express from "express";
 import * as http from "http";
 import { HttpError } from "./utils/error.class";
 import { NextFunction, Request, Response } from "express";
+import { fileUploadRouter } from "./Excel-imports/routes/file_uploader.route";
 const app = express();
 //setting up cors
 app.use(
@@ -24,7 +25,7 @@ AppDataSource.initialize()
   })
   .catch((error) => console.log(error));
 
-// app.use("/api/customer", authRouter);
+app.use("/api/fileUpload", fileUploadRouter);
 
 //global exception handling route
 app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {

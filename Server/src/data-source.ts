@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { UploadedFile } from "./model/file_upload.entity";
+import { ExtractedData } from "./model/extracted_data.entity";
 
 export const AppDataSource = new DataSource({
   type: "mysql",
@@ -11,7 +12,7 @@ export const AppDataSource = new DataSource({
   database: "excelimport",
   synchronize: true,
   logging: false,
-  entities: [UploadedFile],
+  entities: [UploadedFile, ExtractedData],
   migrations: [],
   subscribers: [],
 });
