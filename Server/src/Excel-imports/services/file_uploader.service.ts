@@ -7,6 +7,8 @@ import { HttpError } from "../../utils/error.class";
 import * as XLSX from "xlsx";
 import { UploadedFile } from "../../model/file_upload.entity";
 import { ExtractedData } from "../../model/extracted_data.entity";
+import { id } from "date-fns/locale";
+import { IUpdateData } from "../../interfaces/data_table.interface";
 
 const fileRepository = AppDataSource.getRepository(UploadedFile);
 const dataRepository = AppDataSource.getRepository(ExtractedData);
@@ -67,25 +69,94 @@ export const GetUploadedExcelFile = async (id: string, res: Response) => {
         Item_no: Object.values(jsonData[i])[0].toString(),
         Description: Object.values(jsonData[i])[1].toString(),
         Unit: Object.values(jsonData[i])[2].toString(),
-        Quantity: Object.values(jsonData[i])[3].toString(),
-        Rate: Object.values(jsonData[i])[4].toString(),
-        Amount: Object.values(jsonData[i])[5].toString(),
+        Quantity: !Number.isNaN(
+          parseFloat(Object.values(jsonData[i])[3].toString())
+        )
+          ? parseFloat(Object.values(jsonData[i])[3].toString()).toLocaleString(
+              "en-US",
+              {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }
+            )
+          : "-",
+        Rate: !Number.isNaN(
+          parseFloat(Object.values(jsonData[i])[4].toString())
+        )
+          ? parseFloat(Object.values(jsonData[i])[4].toString()).toLocaleString(
+              "en-US",
+              {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }
+            )
+          : "-",
+        Amount: !Number.isNaN(
+          parseFloat(Object.values(jsonData[i])[5].toString())
+        )
+          ? parseFloat(Object.values(jsonData[i])[5].toString()).toLocaleString(
+              "en-US",
+              {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }
+            )
+          : "-",
       });
       await dataRepository.save(newData);
     } else if (Object.values(jsonData[i]).length === 5) {
       let newData = dataRepository.create({
         Description: Object.values(jsonData[i])[0].toString(),
         Unit: Object.values(jsonData[i])[1].toString(),
-        Quantity: Object.values(jsonData[i])[2].toString(),
-        Rate: Object.values(jsonData[i])[3].toString(),
-        Amount: Object.values(jsonData[i])[4].toString(),
+        Quantity: !Number.isNaN(
+          parseFloat(Object.values(jsonData[i])[2].toString())
+        )
+          ? parseFloat(Object.values(jsonData[i])[2].toString()).toLocaleString(
+              "en-US",
+              {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }
+            )
+          : "-",
+        Rate: !Number.isNaN(
+          parseFloat(Object.values(jsonData[i])[3].toString())
+        )
+          ? parseFloat(Object.values(jsonData[i])[3].toString()).toLocaleString(
+              "en-US",
+              {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }
+            )
+          : "-",
+        Amount: !Number.isNaN(
+          parseFloat(Object.values(jsonData[i])[4].toString())
+        )
+          ? parseFloat(Object.values(jsonData[i])[4].toString()).toLocaleString(
+              "en-US",
+              {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }
+            )
+          : "-",
       });
       await dataRepository.save(newData);
     } else if (Object.values(jsonData[i]).length === 2) {
       if (typeof Object.values(jsonData[i])[0] === "string") {
         let newData = dataRepository.create({
           Description: Object.values(jsonData[i])[0].toString(),
-          Amount: Object.values(jsonData[i])[1].toString(),
+          Amount: !Number.isNaN(
+            parseFloat(Object.values(jsonData[i])[1].toString())
+          )
+            ? parseFloat(
+                Object.values(jsonData[i])[1].toString()
+              ).toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })
+            : "-",
         });
         await dataRepository.save(newData);
       } else if (typeof Object.values(jsonData[i])[0] === "number") {
@@ -112,16 +183,69 @@ export const GetUploadedExcelFile = async (id: string, res: Response) => {
 
   return res.status(200).json({
     status: "Success!",
-    message: "",
-    //  data: typeof Object.values(jsonData[3])[0],
+    message: "Data Stored Successfully!",
+    // data: parseFloat(Object.values(jsonData[5])[3].toString()),
   });
 };
 
-export const getf = async (res: Response) => {
-  let checkFileExistence = await fileRepository.find();
+export const GetExcelFiles = async (res: Response) => {
+  let excelFile = await fileRepository.find();
 
   return res.status(200).json({
     status: "Success!",
-    data: checkFileExistence,
+    data: excelFile,
+  });
+};
+
+export const GetTableData = async (res: Response) => {
+  let dataTable = await dataRepository.find();
+
+  return res.status(200).json({
+    status: "Success!",
+    data: dataTable,
+  });
+};
+
+// export const UpdateTableData = async (
+//   updateData: IUpdateData,
+//   id: string,
+//   res: Response
+// ) => {
+//   let checkID = await dataRepository.findOne({
+//     where: {
+//       id: parseInt(id),
+//     },
+//   });
+//   if (!checkID) {
+//     return res.status(200).json({
+//       status: "Success!",
+//       message: "Invalid ID!",
+//     });
+//   }
+//   let dataTable = await dataRepository.update()
+//   return res.status(200).json({
+//     status: "Success!",
+//     //data: dataTable,
+//   });
+// };
+
+export const DeleteTableData = async (id: string, res: Response) => {
+  let checkID = await dataRepository.findOne({
+    where: {
+      id: parseInt(id),
+    },
+  });
+
+  if (!checkID) {
+    return res.status(200).json({
+      status: "Success!",
+      message: "Invalid ID!",
+    });
+  }
+  await dataRepository.delete({ id: parseInt(id) });
+
+  return res.status(200).json({
+    status: "Success!",
+    message: "Data Removed Successfully!",
   });
 };

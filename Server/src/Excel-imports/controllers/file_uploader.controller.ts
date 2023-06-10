@@ -5,6 +5,7 @@ import * as fileUploaderService from "../services/file_uploader.service";
 import { validate, validateOrReject } from "class-validator";
 import { HttpError } from "../../utils/error.class";
 import { UploadFileDto } from "../dtos/upload_file.dto";
+import { UpdateDataDto } from "../dtos/data_table.dto";
 
 const multerStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -66,6 +67,38 @@ export async function GetUploadedExcelFile(
   return fileUploaderService.GetUploadedExcelFile(id, res);
 }
 
-export async function getfn(req: Request, res: Response, next: NextFunction) {
-  return fileUploaderService.getf(res);
+export async function GetExcelFiles(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  return fileUploaderService.GetExcelFiles(res);
 }
+
+// export async function UpdateTableData(
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) {
+//   let id = req.params.id;
+
+//   let updateDataDto = new UpdateDataDto();
+//   updateDataDto.Item_no = req.body.Item_no;
+//   updateDataDto.Description = req.body.Description;
+//   updateDataDto.Unit = req.body.Unit;
+//   updateDataDto.Quantity = req.body.Quantity;
+//   updateDataDto.Rate = req.body.Rate;
+//   updateDataDto.Amount = req.body.Amount;
+
+//   validate(updateDataDto).then((errors) => {
+//     // errors is an array of validation errors
+//     if (errors.length > 0) {
+//       //   console.log(errors[0].constraints);
+//       res.status(404).json({
+//         message: errors[0].constraints,
+//       });
+//     } else {
+//       return fileUploaderService.UpdateTableData(updateDataDto, id, res);
+//     }
+//   });
+// }

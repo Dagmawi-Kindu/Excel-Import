@@ -3,13 +3,13 @@ import * as express from "express";
 import {
   UploadExcelFile,
   uploadFile,
-  getfn,
   GetUploadedExcelFile,
+  GetExcelFiles,
 } from "../controllers/file_uploader.controller";
 
 const fileUploadRouter = express.Router();
 
 fileUploadRouter.post("/upload", uploadFile, UploadExcelFile);
 fileUploadRouter.get("/get/:id", GetUploadedExcelFile);
-fileUploadRouter.get("/geting", getfn);
+fileUploadRouter.get("/getExcelFiles", GetExcelFiles);
 export { fileUploadRouter };
